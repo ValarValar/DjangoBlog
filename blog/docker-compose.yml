@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  django_blog_app:
+    container_name: django_blog_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - django_blog_network
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env.dev
+    depends_on:
+      django_blog_postgres_db:
+        condition: service_healthy
+
+  django_blog_postgres_db:
+    container_name: django_blog_postgres_db
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=django_blog_app
+      - POSTGRES_USER=django_blog_app
+      - POSTGRES_PASSWORD=django_blog_app
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    networks:
+      - django_blog_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U django_blog_app" ]
+      interval: 5s
+      timeout: 20s
+      retries: 100
+
+
+
+networks:
+  django_blog_network:
+
+volumes:
+  postgres_data:
