@@ -6,9 +6,9 @@ class CustomOrderingFilter(OrderingFilter):
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)
 
-        if ordering:
-            if 'posts__count' in ordering or '-posts__count' in ordering:
-                queryset = queryset.annotate(Count('posts'))
+        #if ordering:
+            #if 'posts__count' in ordering or '-posts__count' in ordering:
+                #queryset = queryset.annotate(Count('posts'))
         if ordering:
             return queryset.order_by(*ordering)
 
