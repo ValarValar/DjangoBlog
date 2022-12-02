@@ -7,11 +7,11 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     subscriptions = models.ManyToManyField(
-        to='self',
+        User,
         related_name='subscribers',
         symmetrical=False,
         blank=True,
-    )
+)
 
     def __str__(self):
         return self.user.username

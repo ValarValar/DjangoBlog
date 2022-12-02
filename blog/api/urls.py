@@ -1,10 +1,11 @@
 from django.urls import path
 
-from .views import PostCreate, UserList, UserPostsList, SubcribeView
+from .views import PostCreateView, UserListView, UserPostsListView, SubcribeView, FeedView
 
 urlpatterns = [
-    path('post_create/', PostCreate.as_view()),
-    path('profiles_list/', UserList.as_view()),
-    path('<str:username>/posts/', UserPostsList.as_view()),
+    path('post_create/', PostCreateView.as_view()),
+    path('profiles_list/', UserListView.as_view()),
+    path('<str:username>/posts/', UserPostsListView.as_view()),
     path('<str:username>/subscribe/', SubcribeView.as_view()),
+    path('feed/', FeedView.as_view())
 ]
