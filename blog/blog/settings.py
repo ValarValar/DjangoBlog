@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,22 +40,24 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
+    'drf_spectacular',
     'api.apps.ApiConfig',
     'auth.apps.AuthConfig'
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 INTERNAL_IPS = ['127.0.0.1', ]
@@ -65,15 +68,46 @@ def show_toolbar(request):
 
 
 DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK": show_toolbar,
     'INTERCEPT_REDIRECTS': True,
-    "DISABLE_PANELS": {}
+    "DISABLE_PANELS": {},
+    "SHOW_TOOLBAR_CALLBACK": show_toolbar,
 }
+
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+    'debug_toolbar.panels.history.HistoryPanel'
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Blog Project Api',
+    'DESCRIPTION': 'Small showcase project with blog api implementation via Django Rest',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }
 
 ROOT_URLCONF = 'blog.urls'
