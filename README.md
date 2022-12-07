@@ -21,6 +21,8 @@ post_save signal autocreating
 * Endpoint allows to mark or unmark post as seen.
 Manual containing usage of API endpoinst u can find at swagger endpoint after setting up project.
 ## Setup
+activate venv    
+pip install docker    
 docker-compose up -d --build    
 docker-compose exec django_blog_app python manage.py makemigrations    
 docker-compose exec django_blog_app python manage.py migrate    
