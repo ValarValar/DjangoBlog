@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from .models import Post, Profile
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostCreateSerializer(serializers.ModelSerializer):
     """
         Create post serializer
     """

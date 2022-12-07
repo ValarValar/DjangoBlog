@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
 from django.db.models import Count, Case, When
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,7 +15,11 @@ from .filters import PostSeenFilter
 from .models import Post, Profile, UserPostRelation
 from .paginators import CustomPageNumberPagination
 from .serializers import (
-    PostSerializer, ProfileSerializer, UserListSerializer, UserPostsSerializer, PostDetailSerializer
+    PostCreateSerializer,
+    ProfileSerializer,
+    UserListSerializer,
+    UserPostsSerializer,
+    PostDetailSerializer
 )
 
 
@@ -30,7 +36,7 @@ class PostCreateView(CreateAPIView, BaseJWTAuthenticationView):
         Post creation endpoint. Require Authentication
     """
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = PostCreateSerializer
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -54,12 +60,13 @@ class UserListView(ListAPIView):
     ordering_fields = ['username', 'posts_count']
 
 
-class UserPostsListView(ListAPIView):
+class UserPostsListView(RetrieveAPIView):
     """
         List of user's detailed posts. Ordered by post creation time.
         Starting with the newest ones
     """
     serializer_class = UserPostsSerializer
+    lookup_field = 'username'
 
     def get_queryset(self):
         return User.objects.filter(username=self.kwargs['username']).prefetch_related('posts')
@@ -77,19 +84,18 @@ class SubscribeView(BaseJWTAuthenticationView):
 
     def post(self, request, username=None):
         current_profile = Profile.objects.get(user=request.user)
+
         if request.user.username == username:
             raise ValidationError({"message": f"You can't subcsribe at yourself"})
-        try:
-            subcribe_to = User.objects.get(username=username)
-            if current_profile.subscriptions.filter(id=subcribe_to.id).exists():
-                current_profile.subscriptions.remove(subcribe_to)
-            else:
-                current_profile.subscriptions.add(subcribe_to)
-            result = {
-                "profile": ProfileSerializer(current_profile).data,
-            }
-        except Profile.DoesNotExist:
-            raise ValidationError({"message": f'User {username} does not exits'})
+
+        subcribe_to = get_object_or_404(User, username=username)
+        if current_profile.subscriptions.filter(id=subcribe_to.id).exists():
+            current_profile.subscriptions.remove(subcribe_to)
+        else:
+            current_profile.subscriptions.add(subcribe_to)
+        result = {
+            "profile": ProfileSerializer(current_profile).data,
+        }
 
         return Response(result)
 
@@ -139,6 +145,8 @@ class PostMarkAsSeenView(BaseJWTAuthenticationView):
     """
 
     def post(self, request, post_id=None):
+        if not(Post.objects.filter(id=post_id).exists()):
+            raise Http404("Post does not exist")
         needed_relation = UserPostRelation.objects.filter(user_id=request.user.id, post_id=post_id)
 
         if needed_relation.exists():

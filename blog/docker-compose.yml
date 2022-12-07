@@ -22,10 +22,8 @@ services:
     image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=django_blog_app
-      - POSTGRES_USER=django_blog_app
-      - POSTGRES_PASSWORD=django_blog_app
+    env_file:
+      - ./.env.dev
     expose:
       - 5432
     ports:
