@@ -3,9 +3,10 @@
 Showcase pet-project with Django/DjagoRestAPI implementation of Blog application. Main purpose of it is to store somewhere my self-development process.
 ## Technology stack
 Django, DjangoRestAPI 
-Docker/docker-compose     
+virtualization -> Docker/docker-compose     
 db -> Postgresql    
-documentation -> Drf-spectacular    
+documentation -> Drf-spectacular  
+testing -> unittest(drf)
 This project is created for education, so i decided to leave for now here .env.dev file and DebugToolbar is still turned on
 ## Models
 Profile -> proxy for default user model to store data connected with User instead of changing default User model.
