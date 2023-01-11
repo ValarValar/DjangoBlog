@@ -22,6 +22,7 @@ post_save signal autocreating
 * Endpoint allows to mark or unmark post as seen.
 Manual containing usage of API endpoinst u can find at swagger endpoint after setting up project.
 ## Setup
+reminder: don't forger to configure your interpreter and activate venv.   
 activate venv    
 pip install docker    
 docker-compose up -d --build    
