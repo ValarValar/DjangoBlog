@@ -26,6 +26,7 @@ reminder: don't forger to configure your interpreter and activate venv.
 activate venv    
 pip install docker    
 docker-compose up -d --build    
+This part you should run from the root directory of the project     
 docker-compose exec django_blog_app python manage.py makemigrations    
 docker-compose exec django_blog_app python manage.py migrate    
 docker-compose exec django_blog_app python manage.py createsuperuser --username admin --email admin@mail.ru    
